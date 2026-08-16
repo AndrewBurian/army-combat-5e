@@ -1,0 +1,66 @@
+{
+  "TYPES.Actor.army-combat-5e.stand": "Stand",
+  "TYPES.Actor.army-combat-5e.unit": "Unit",
+
+  "ARMY5E.Sheet.Stand": "Stand Sheet",
+  "ARMY5E.Sheet.Unit": "Unit Sheet",
+
+  "ARMY5E.UnitType.Skirmisher": "Skirmishers",
+  "ARMY5E.UnitType.Regiment": "Regiment",
+
+  "ARMY5E.Configuration.Aid": "Aid",
+  "ARMY5E.Configuration.Defend": "Defend",
+  "ARMY5E.Configuration.March": "March",
+
+  "ARMY5E.Condition.Isolated": "Isolated",
+  "ARMY5E.Condition.Broken": "Broken",
+
+  "ARMY5E.Stand.Tab": "Stand",
+  "ARMY5E.Stand.DefaultName": "{name} Stand",
+  "ARMY5E.Stand.Composition": "Composition",
+  "ARMY5E.Stand.FiguresStanding": "Figures Standing",
+  "ARMY5E.Stand.FiguresStandingHint": "Flavour only. A stand fights at full effect until it becomes a casualty.",
+  "ARMY5E.Stand.Origin": "Made From",
+  "ARMY5E.Stand.OriginHint": "A stand is a copy, not a link. Editing the original creature will not change this stand.",
+  "ARMY5E.Stand.CasualtyNotice": "This stand is a casualty. It keeps acting until the end of the round, then is eliminated.",
+
+  "ARMY5E.Stand.Scaling": "Scaling",
+  "ARMY5E.Stand.ScalingHint": "As written, a stand of ten creatures has one creature's hit points and damage. Adjust these if your table scales stands up.",
+  "ARMY5E.Stand.ScalingHP": "Hit Point Multiplier",
+  "ARMY5E.Stand.ScalingDamage": "Damage Multiplier",
+  "ARMY5E.Stand.ScalingModified": "This stand deviates from the rules as written.",
+
+  "ARMY5E.Stand.Solos": "Joined Solos",
+  "ARMY5E.Stand.SolosHint": "Solos joined to this stand move with it and are targeted as part of it, but use their own AC and saving throws.",
+  "ARMY5E.Stand.NoSolos": "No solos have joined this stand.",
+  "ARMY5E.Stand.RemoveSolo": "Detach Solo",
+
+  "ARMY5E.Stand.Warning.InvalidSize": "{name} cannot form a stand. Only creatures of Huge size or smaller can; Gargantuan creatures always fight as solos.",
+  "ARMY5E.Stand.Warning.SizeOnSheet": "This stand's creature size is not legal. Only Huge or smaller creatures can form stands.",
+
+  "ARMY5E.Unit.Tab": "Unit",
+  "ARMY5E.Unit.Formation": "Formation",
+  "ARMY5E.Unit.Type": "Unit Type",
+  "ARMY5E.Unit.TypeHint": "Fixed before the battle. Skirmishers roll initiative on their best Dexterity, regiments on their worst.",
+  "ARMY5E.Unit.Configuration": "Configuration",
+  "ARMY5E.Unit.ConfigurationHint": "Aid grants adjacent allies advantage at half speed. Defend gives +2 AC but forbids attacking, at half speed. March moves at full speed.",
+  "ARMY5E.Unit.SkirmisherNoConfig": "Skirmishers do not use configurations.",
+
+  "ARMY5E.Unit.Strength": "Strength",
+  "ARMY5E.Unit.StandCount": "Stands Fielded",
+  "ARMY5E.Unit.StartingStands": "Stands at Battle Start",
+  "ARMY5E.Unit.StartingStandsHint": "Morale is checked once a unit has lost more than half the stands it started with.",
+  "ARMY5E.Unit.NotRecorded": "Not recorded",
+  "ARMY5E.Unit.RecordStrength": "Record Starting Strength",
+  "ARMY5E.Unit.BrokenNotice": "This unit is broken. It may take only the Retreat action until it rallies.",
+
+  "ARMY5E.Unit.Command": "Command",
+  "ARMY5E.Unit.Commander": "Commander",
+  "ARMY5E.Unit.CommanderHint": "A solo joined to one of this unit's stands. One per unit.",
+  "ARMY5E.Unit.NoCommander": "None",
+
+  "ARMY5E.Unit.Notify.StrengthRecorded": "{name} starts the battle with {count} stands.",
+  "ARMY5E.Unit.Warning.StandsOnly": "Only stands can be added to a unit.",
+
+  "ARMY5E.Warning.IncompatibleSystem": "Army Combat 5e expects internals that dnd5e {version} does not provide ({methods}). Stands will not prepare correctly. Check for a module update."
+}

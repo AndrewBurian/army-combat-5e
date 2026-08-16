@@ -1,0 +1,53 @@
+.army-combat-5e .army-stand-tab,
+.army-combat-5e .army-unit-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.army-combat-5e .notification {
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  font-size: var(--font-size-13, 13px);
+}
+
+.army-combat-5e .army-figures {
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
+.army-combat-5e .army-solo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.army-combat-5e .army-solo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.army-combat-5e .army-solo img {
+  border: none;
+  border-radius: 3px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.army-combat-5e .army-solo > a {
+  flex: 1;
+}
+
+.army-combat-5e .empty {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.army-combat-5e .hint.warning {
+  color: var(--dnd5e-color-maroon, #9e2f2f);
+}

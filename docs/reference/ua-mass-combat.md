@@ -2,10 +2,11 @@
 
 Official PDF: <https://media.wizards.com/2017/dnd/downloads/2017_UAMassCombat_MCUA_v1.pdf>
 
-> **Reconstructed notes.** The source PDF could not be downloaded in this environment
-> (see [README](./README.md)). Everything below comes from secondary sources.
-> Confidence is marked per section. Verify against the PDF before implementing
-> anything numeric.
+> **Not the ruleset this module implements.** We implement the 2015 tactical
+> [When Armies Clash](./ua-when-armies-clash.md); this file is kept only as context for
+> that choice. Nothing here has been verified against the source PDF — it is reconstructed
+> from secondary sources with per-section confidence markers, and should not be used as an
+> implementation reference without checking it first.
 
 ## Premise
 

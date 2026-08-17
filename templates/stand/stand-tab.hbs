@@ -1,4 +1,4 @@
-<section class="army-stand-tab">
+<section class="tab army-stand-tab {{ tab.cssClass }}" data-tab="{{ tab.id }}" data-group="{{ tab.group }}">
 
   {{#unless stand.hasValidSize}}
   <div class="notification warning">{{localize "ARMY5E.Stand.Warning.SizeOnSheet"}}</div>

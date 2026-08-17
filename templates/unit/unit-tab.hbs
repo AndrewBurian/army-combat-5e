@@ -1,4 +1,4 @@
-<section class="army-unit-tab">
+<section class="tab army-unit-tab {{ tab.cssClass }}" data-tab="{{ tab.id }}" data-group="{{ tab.group }}">
 
   {{#if unit.broken}}
   <div class="notification error">{{localize "ARMY5E.Unit.BrokenNotice"}}</div>

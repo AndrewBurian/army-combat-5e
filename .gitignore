@@ -6,3 +6,9 @@ dist/
 # Copyrighted WotC source PDFs — keep local, never commit.
 # See docs/reference/README.md
 docs/reference/*.pdf
+
+# License keys
+.secret/
+
+# temp files
+.tmp/

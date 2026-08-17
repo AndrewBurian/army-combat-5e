@@ -7,6 +7,12 @@ import { ACTOR_TYPES, DISTANCE_SCALE, MODULE_ID, STAND_SIZES } from "./config.mj
 const MOVEMENT_KEYS = ["burrow", "climb", "fly", "swim", "walk"];
 
 /**
+ * Sense keys carrying a distance in feet.
+ * @type {string[]}
+ */
+const SENSE_KEYS = ["blindsight", "darkvision", "tremorsense", "truesight"];
+
+/**
  * Item range keys carrying a distance in feet.
  * @type {string[]}
  */
@@ -16,12 +22,19 @@ const RANGE_KEYS = ["value", "long", "reach"];
 
 /**
  * Scale a distance from character scale to battle scale, leaving null and zero alone.
- * @param {number|null} value
- * @returns {number|null}
+ *
+ * Stored distances are not reliably numbers — movement speeds in the 5e compendia are
+ * strings (`"30"`), and a NumberField only coerces them on the way out to derived data,
+ * which is not what we are rewriting. So coerce before testing, and hand back the original
+ * value untouched when there is no distance there to scale.
+ *
+ * @param {number|string|null} value
+ * @returns {number|string|null}
  */
 function scaleDistance(value) {
-  if ( !Number.isFinite(value) || (value === 0) ) return value;
-  return value * DISTANCE_SCALE;
+  const distance = Number(value);
+  if ( !Number.isFinite(distance) || (distance === 0) ) return value;
+  return distance * DISTANCE_SCALE;
 }
 
 /* -------------------------------------------- */
@@ -41,16 +54,28 @@ export function applyBattleScale(source) {
     if ( key in movement ) movement[key] = scaleDistance(movement[key]);
   }
 
-  const senses = source.system?.attributes?.senses;
-  if ( senses ) for ( const key of ["blindsight", "darkvision", "tremorsense", "truesight"] ) {
-    if ( key in senses ) senses[key] = scaleDistance(senses[key]);
+  // dnd5e 5.x keeps the individual senses under `ranges`. The flat `senses.darkvision`
+  // keys still read, but only as a deprecation shim over derived data — they are absent
+  // from stored source, so writing them would scale nothing.
+  const ranges = source.system?.attributes?.senses?.ranges;
+  if ( ranges ) for ( const key of SENSE_KEYS ) {
+    if ( key in ranges ) ranges[key] = scaleDistance(ranges[key]);
   }
 
   for ( const item of source.items ?? [] ) {
     const range = item.system?.range;
-    if ( !range ) continue;
-    for ( const key of RANGE_KEYS ) {
+    if ( range ) for ( const key of RANGE_KEYS ) {
       if ( key in range ) range[key] = scaleDistance(range[key]);
+    }
+
+    // An activity whose range does not override the item's takes its distance from the
+    // item, and its own stored value is dead data — scaling it would be a no-op at best
+    // and misleading to read at worst.
+    for ( const activity of Object.values(item.system?.activities ?? {}) ) {
+      if ( !activity.range?.override ) continue;
+      for ( const key of RANGE_KEYS ) {
+        if ( key in activity.range ) activity.range[key] = scaleDistance(activity.range[key]);
+      }
     }
   }
 

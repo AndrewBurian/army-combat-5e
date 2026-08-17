@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "foundry": {
+      "command": "node",
+      "args": ["/path/to/foundry-mcp/dist/index.js"],
+      "env": {
+        "FOUNDRY_CDP_URL": "http://127.0.0.1:9222",
+        "FOUNDRY_URL_FILTER": "localhost:30000",
+        "FOUNDRY_WORLD_URL": "http://localhost:30000/game",
+        "FOUNDRY_CHROME_PROFILE": "/path/to/army-combat-5e/.foundry/chrome-profile"
+      }
+    }
+  }
+}

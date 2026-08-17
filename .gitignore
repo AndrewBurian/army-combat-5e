@@ -12,3 +12,10 @@ docs/reference/*.pdf
 
 # temp files
 .tmp/
+
+# Local Foundry test rig: server data directory and browser profile.
+# Disposable — tools/foundry-server.ps1 rebuilds what it needs. See docs/DEVELOPING.md
+.foundry/
+
+# MCP server registration. Absolute, machine-specific paths; copy .mcp.json.example.
+.mcp.json

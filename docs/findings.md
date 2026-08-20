@@ -21,6 +21,42 @@ Not re-testing these unless something nearby changes.
 
 ## Findings
 
+### tab-always-visible
+
+**The stand and unit tabs render on every tab of their sheet.** The Loot tab of a unit sheet
+shows the inventory list with Formation, Strength and Command stacked underneath it.
+
+The markup and the tab wiring are both correct. `data-tab`, `data-group` and `tab.cssClass`
+all resolve, and an inactive unit part correctly renders as `class="tab army-unit-tab "`
+with no `active`. The fault is entirely in `styles/army-combat-5e.css:1`:
+
+```css
+.army-combat-5e .army-stand-tab,
+.army-combat-5e .army-unit-tab {
+  display: flex;
+  ...
+}
+```
+
+`display: flex` is unconditional, so it also applies when the tab is not active. Foundry
+hides inactive tabs with `.tab[data-tab]:not(.active) { display: none }`, which lives in
+`@layer blocks.base` of `foundry2.css`. Module styles are unlayered, and **unlayered rules
+beat layered ones regardless of specificity** — confirmed live: an unlayered rule at
+specificity (0,1,0) overrode core's (0,3,0). So our rule wins and the tab never hides.
+
+Fix by qualifying both selectors with `.active`, which leaves the inactive case to core:
+
+```css
+.army-combat-5e .army-stand-tab.active,
+.army-combat-5e .army-unit-tab.active {
+```
+
+Verified in the live CSSOM that an `.active`-qualified rule applies on the active tab only.
+
+Note when checking this: the module stylesheet applies but does not appear as an entry in
+`document.styleSheets`, and its rules are not reachable by walking the CSSOM. Verify with
+`getComputedStyle(part).display` on an inactive tab instead of looking for the rule.
+
 ### unit-stamping
 
 **Deployed tokens carry no reference to the unit that placed them.** This blocks the whole

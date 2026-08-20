@@ -191,6 +191,22 @@ node ..\foundry-mcp\dist\probe.js
 
 Ad-hoc probing without the MCP server is just CDP: see the scratch helpers in `.tmp/`.
 
+### Keep probes non-interactive
+
+A probe runs unattended, so anything that waits on a mouse either hangs or silently reports
+whatever happened to be clicked. `system.placeMembers()` is the trap: it routes through
+`TokenPlacement.place()`, minimises the sheet and consumes the next N clicks, then does a
+single `createEmbeddedDocuments("Token", ...)` at the end. Place tokens directly instead —
+`(await actor.getTokenDocument({ x, y })).toObject()` into
+`scene.createEmbeddedDocuments("Token", ...)` — which is the same write with coordinates in
+place of clicks.
+
+Avoid for the same reason: `scene.activate()`, which moves the view of every connected user
+where `scene.view()` is local; `token.control()` and `token.setTarget()`, which clobber
+whatever the GM had selected; and any `Dialog` or `DialogV2` prompt.
+
+Delete the tokens a probe created, and leave the ones a person placed.
+
 ## Gotchas
 
 - **Keep `tools/*.ps1` ASCII-only.** Windows PowerShell 5.1 reads `.ps1` as ANSI unless the

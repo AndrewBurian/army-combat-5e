@@ -4,7 +4,7 @@
 # `.foundry/` here, so the test rig can be thrown away with `rm -r .foundry`.
 #
 #   .\tools\foundry-server.ps1
-#   .\tools\foundry-server.ps1 -Port 30001
+#   .\tools\foundry-server.ps1 -Instance scratch -Port 30001
 #
 # Override the binary location with -AppPath or $env:FOUNDRY_APP.
 #
@@ -14,6 +14,7 @@
 
 [CmdletBinding()]
 param(
+  [string]$Instance = "",
   [int]$Port = 30000,
   [string]$AppPath = $env:FOUNDRY_APP,
   [switch]$HotReload,
@@ -22,15 +23,29 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repo = Split-Path -Parent $PSScriptRoot
-$dataPath = Join-Path $repo ".foundry\data"
+
+# An instance is one data directory plus one port. Foundry holds a lock on Config/options.json
+# for as long as it runs and refuses to start against a locked directory, so servers meant to
+# run at the same time need separate -Instance names as well as separate -Port numbers.
+# The unnamed instance keeps the original .foundry\data path.
+if ($Instance -and ($Instance -notmatch '^[A-Za-z0-9._-]+$')) {
+  throw "Instance name '$Instance' must be letters, digits, dot, dash or underscore."
+}
+$instanceRoot = if ($Instance) { Join-Path $repo ".foundry\$Instance" } else { Join-Path $repo ".foundry" }
+$dataPath = Join-Path $instanceRoot "data"
 $moduleDir = Join-Path $dataPath "Data\modules\army-combat-5e"
 
 # Foundry itself is not in this repo, and where it lands differs per machine and per build,
 # so probe the usual spots rather than baking one path in. -AppPath and $env:FOUNDRY_APP
 # both win over the guesses. What is wanted is the directory holding main.mjs, which for
 # the Windows portable build is App\resources\app under the install root.
-$appCandidates = @(
-  "$env:USERPROFILE\FoundryVTT-14\App\resources\app",
+#
+# Portable installs are matched by glob and tried newest generation first, so upgrading is
+# just unzipping FoundryVTT-15 beside FoundryVTT-14 with nothing here to edit. The installed
+# build is last because it is the one most likely to be a stale older generation.
+$portableRoots = Get-ChildItem $env:USERPROFILE -Directory -Filter "FoundryVTT-*" -ErrorAction SilentlyContinue |
+  Sort-Object { if ($_.Name -match '(\d+)') { [int]$matches[1] } else { 0 } } -Descending
+$appCandidates = @($portableRoots | ForEach-Object { Join-Path $_.FullName "App\resources\app" }) + @(
   "$env:LOCALAPPDATA\FoundryVTT\app\resources\app",
   "$env:ProgramFiles\Foundry Virtual Tabletop\resources\app"
 )
@@ -44,6 +59,11 @@ if (-not $AppPath) {
 if (-not (Test-Path (Join-Path $AppPath "main.mjs"))) {
   throw "No main.mjs under '$AppPath'; that is not a Foundry app directory."
 }
+
+# Say which build was picked. With more than one Foundry on the machine, silently running the
+# module against the wrong generation is the failure that wastes the most time.
+$release = (Get-Content (Join-Path $AppPath "package.json") -Raw | ConvertFrom-Json).release
+Write-Host "foundry: v$($release.generation) build $($release.build) at $AppPath" -ForegroundColor Green
 
 # Foundry must see the module inside its own data directory, but that data directory now
 # lives inside the repo. A junction pointing at the repo root would therefore contain

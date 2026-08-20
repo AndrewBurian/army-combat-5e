@@ -8,17 +8,44 @@ disposable: delete it and re-run the setup below to get a clean world.
 
 ```
 .foundry/
-├── data/            Foundry --dataPath
+├── data/            Foundry --dataPath for the default instance
 │   ├── Config/      licence, server options
 │   ├── Data/        modules, systems, worlds
 │   └── Logs/
-└── chrome-profile/  browser profile, including the signed-in Foundry session
+├── chrome-profile/  browser profile, including the signed-in Foundry session
+└── <name>/          the same data/ and chrome-profile/ pair for a named instance
 ```
 
-The Foundry binary is the one thing not in the repo. `foundry-server.ps1` probes the usual
-install locations; point it elsewhere with `-AppPath` or `$env:FOUNDRY_APP`, naming the
-directory that contains `main.mjs` (for the Windows portable build, `App\resources\app`).
-It fails with the list of paths it tried rather than starting against the wrong install.
+## The Foundry binary
+
+The binary is the one thing not in the repo. This machine uses the **Windows portable** build,
+unpacked at `%USERPROFILE%\FoundryVTT-14`.
+
+Portable is only about where Foundry keeps its own files. An empty marker file,
+`App\portable.json`, is the whole switch, and it changes exactly two paths:
+
+- Default user data goes to the install root rather than `%LOCALAPPDATA%\FoundryVTT`.
+- Electron's cache, cookies and localStorage go to `ElectronData` beside `App` rather than
+  `%APPDATA%\Foundry Virtual Tabletop`.
+
+Server code, licensing and update channels are identical to the installed build. There is no
+installer, no uninstaller and no registry entry, so an install is just a directory: unpack to
+add one, delete to remove one.
+
+The rig relies on neither default, because `foundry-server.ps1` always passes an explicit
+`--dataPath`. What portable does buy is that several generations can sit side by side without
+sharing state.
+
+### Updating
+
+Unpack the next portable zip as a sibling, e.g. `%USERPROFILE%\FoundryVTT-15`.
+`foundry-server.ps1` globs `FoundryVTT-*` and takes the highest generation, so nothing here
+needs editing. It prints the generation and build it chose on every start; check that line
+after an upgrade. Keep the old directory until the module is confirmed working, then delete it.
+
+To pin a specific build, use `-AppPath` or `$env:FOUNDRY_APP`, naming the directory that
+contains `main.mjs` (for a portable build, `App\resources\app`). The script fails with the list
+of paths it tried rather than starting against the wrong install.
 
 ## Running
 
@@ -33,6 +60,34 @@ modules load fine that way. It needs Node 24.
 `foundry-chrome.ps1` uses a dedicated `--user-data-dir`. That is not optional: if Chrome is
 already running under your normal profile, a second invocation just opens a tab in the
 existing process and the debugging port is silently never opened.
+
+## Running more than one instance
+
+One unpacked Foundry can back any number of servers. The data directory is what cannot be
+shared: Foundry holds a lock on `Config/options.json` while it runs and refuses to start
+against a locked directory. So a second server needs its own `-Instance` as well as its own
+`-Port`.
+
+```powershell
+.\tools\foundry-server.ps1                                # .foundry\data,         :30000
+.\tools\foundry-server.ps1 -Instance scratch -Port 30001  # .foundry\scratch\data, :30001
+```
+
+An instance is a full rig with its own licence, systems, worlds and browser profile, which is
+what makes it useful for testing a migration against a copy of a world, or for running two
+Foundry generations at once during an upgrade (point the older server at the older build with
+`-AppPath`).
+
+`foundry-chrome.ps1` takes the same `-Instance` and derives the DevTools port from `-Port`
+(30000 -> 9222, 30001 -> 9223), so the browsers stay separate too:
+
+```powershell
+.\tools\foundry-chrome.ps1 -Instance scratch -Port 30001
+```
+
+A new instance starts empty and needs the same one-off setup as a fresh rig. To skip re-entering
+the licence key, copy `Config/license.json` from a working instance of the same generation
+before first launch; if Foundry rejects it, enter the key again.
 
 ## How the module reaches Foundry
 

@@ -2,23 +2,36 @@
 # repo's own browser profile so the signed-in session is part of the disposable test rig.
 #
 #   .\tools\foundry-chrome.ps1
+#   .\tools\foundry-chrome.ps1 -Instance scratch -Port 30001
 #
 # The dedicated --user-data-dir is not optional: if Chrome is already running under your
 # normal profile, a second invocation just opens a tab in the existing process and the
-# debugging port is silently never opened.
+# debugging port is silently never opened. The same applies between instances, which is why
+# each one gets its own profile directory and its own DevTools port.
 #
 # Keep this file ASCII-only; see the note in foundry-server.ps1.
 
 [CmdletBinding()]
 param(
+  [string]$Instance = "",
   [int]$Port = 30000,
-  [int]$DebugPort = 9222,
+  [int]$DebugPort = 0,
   [string]$ChromePath = $(if ($env:FOUNDRY_CHROME_PATH) { $env:FOUNDRY_CHROME_PATH } else { "C:\Program Files\Google\Chrome\Application\chrome.exe" })
 )
 
 $ErrorActionPreference = "Stop"
 $repo = Split-Path -Parent $PSScriptRoot
-$profileDir = Join-Path $repo ".foundry\chrome-profile"
+
+# Match the instance layout foundry-server.ps1 uses, so the same -Instance reaches the same rig.
+if ($Instance -and ($Instance -notmatch '^[A-Za-z0-9._-]+$')) {
+  throw "Instance name '$Instance' must be letters, digits, dot, dash or underscore."
+}
+$instanceRoot = if ($Instance) { Join-Path $repo ".foundry\$Instance" } else { Join-Path $repo ".foundry" }
+$profileDir = Join-Path $instanceRoot "chrome-profile"
+
+# One DevTools port per server port, so -Port 30001 needs no second flag to stay clear of the
+# browser already attached to 30000. Pass -DebugPort to override.
+if (-not $DebugPort) { $DebugPort = 9222 + ($Port - 30000) }
 
 $listening = [bool](Get-NetTCPConnection -LocalPort $DebugPort -State Listen -ErrorAction SilentlyContinue)
 if ($listening) {

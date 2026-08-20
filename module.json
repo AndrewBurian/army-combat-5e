@@ -50,7 +50,7 @@
   "flags": {
     "hotReload": {
       "extensions": ["css", "hbs", "json"],
-      "paths": ["templates", "lang"]
+      "paths": ["styles", "templates", "lang"]
     }
   },
   "socket": false,

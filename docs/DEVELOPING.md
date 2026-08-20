@@ -94,6 +94,35 @@ A new instance starts empty and needs the same one-off setup as a fresh rig. To 
 the licence key, copy `Config/license.json` from a working instance of the same generation
 before first launch; if Foundry rejects it, enter the key again.
 
+## Auto-launch and hot reload
+
+Two settings in the instance's `Config/options.json` make the loop shorter. Both are server
+options, so they persist across restarts and need no command-line flags:
+
+- `"world": "army-combat-test"` launches that world at startup instead of stopping at the
+  setup screen. The server logs `Launching World | Complete` when it takes.
+- `"hotReload": true` watches the active packages and pushes changed files to connected
+  browsers over the socket.
+
+Hot reload only covers what `flags.hotReload` in `module.json` declares, and both halves
+matter. `extensions` filters by file type, and `paths` restricts which directories are
+watched at all — a type listed in `extensions` still never fires if its directory is missing
+from `paths`. So the two lists have to agree: `css` needs `styles`, `hbs` needs `templates`,
+`json` needs `lang`.
+
+Foundry hot reloads styles, templates and language files. It does not reload `esmodules` —
+`.js`/`.mjs` are only ever watched for core itself, and only in debug mode. A change to
+anything under `scripts/` still needs a browser refresh.
+
+On startup the server prints one line naming every directory it watches:
+
+```
+Watching for changes to army-combat-5e in .../styles, .../templates, .../lang
+```
+
+That line is the thing to check when a change does not appear. It reads through the composed
+module directory's junctions, so edits made in the repo do reach the watcher.
+
 ## How the module reaches Foundry
 
 Foundry only loads modules from inside its own data directory, but that data directory now

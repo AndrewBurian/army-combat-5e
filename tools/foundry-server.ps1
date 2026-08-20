@@ -40,12 +40,24 @@ $moduleDir = Join-Path $dataPath "Data\modules\army-combat-5e"
 # both win over the guesses. What is wanted is the directory holding main.mjs, which for
 # the Windows portable build is App\resources\app under the install root.
 #
-# Portable installs are matched by glob and tried newest generation first, so upgrading is
-# just unzipping FoundryVTT-15 beside FoundryVTT-14 with nothing here to edit. The installed
-# build is last because it is the one most likely to be a stale older generation.
-$portableRoots = Get-ChildItem $env:USERPROFILE -Directory -Filter "FoundryVTT-*" -ErrorAction SilentlyContinue |
-  Sort-Object { if ($_.Name -match '(\d+)') { [int]$matches[1] } else { 0 } } -Descending
-$appCandidates = @($portableRoots | ForEach-Object { Join-Path $_.FullName "App\resources\app" }) + @(
+# A portable install is just a directory, so look where user-local apps conventionally live
+# first and at the profile root second, and match FoundryVTT-* rather than one generation:
+# upgrading is then unzipping FoundryVTT-15 beside FoundryVTT-14 with nothing here to edit.
+# Highest generation wins wherever it sits, and the conventional location breaks a tie. The
+# machine-wide installer paths come last, being the likeliest to hold a stale old generation.
+$portableBases = @("$env:LOCALAPPDATA\Programs", $env:USERPROFILE)
+$portableRoots = @()
+for ($rank = 0; $rank -lt $portableBases.Count; $rank++) {
+  foreach ($dir in Get-ChildItem $portableBases[$rank] -Directory -Filter "FoundryVTT-*" -ErrorAction SilentlyContinue) {
+    $portableRoots += [pscustomobject]@{
+      Path = Join-Path $dir.FullName "App\resources\app"
+      Gen  = if ($dir.Name -match '(\d+)') { [int]$matches[1] } else { 0 }
+      Rank = $rank
+    }
+  }
+}
+$sorted = $portableRoots | Sort-Object @{Expression = "Gen"; Descending = $true}, @{Expression = "Rank"; Descending = $false}
+$appCandidates = @($sorted | ForEach-Object { $_.Path }) + @(
   "$env:LOCALAPPDATA\FoundryVTT\app\resources\app",
   "$env:ProgramFiles\Foundry Virtual Tabletop\resources\app"
 )

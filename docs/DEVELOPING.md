@@ -19,7 +19,9 @@ disposable: delete it and re-run the setup below to get a clean world.
 ## The Foundry binary
 
 The binary is the one thing not in the repo. This machine uses the **Windows portable** build,
-unpacked at `%USERPROFILE%\FoundryVTT-14`.
+unpacked under `%LOCALAPPDATA%\Programs\`, which is where per-user application installs
+conventionally go on Windows: VS Code, Git and Signal all land there. `foundry-server.ps1` also
+accepts an install at the profile root, but prefers the conventional location.
 
 Portable is only about where Foundry keeps its own files. An empty marker file,
 `App\portable.json`, is the whole switch, and it changes exactly two paths:
@@ -38,10 +40,13 @@ sharing state.
 
 ### Updating
 
-Unpack the next portable zip as a sibling, e.g. `%USERPROFILE%\FoundryVTT-15`.
+Unpack the next portable zip as a sibling, e.g. `%LOCALAPPDATA%\Programs\FoundryVTT-15`.
 `foundry-server.ps1` globs `FoundryVTT-*` and takes the highest generation, so nothing here
 needs editing. It prints the generation and build it chose on every start; check that line
 after an upgrade. Keep the old directory until the module is confirmed working, then delete it.
+
+Because there is no installer, moving an install is just moving the directory, as long as no
+server is running out of it.
 
 To pin a specific build, use `-AppPath` or `$env:FOUNDRY_APP`, naming the directory that
 contains `main.mjs` (for a portable build, `App\resources\app`). The script fails with the list

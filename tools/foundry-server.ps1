@@ -5,8 +5,10 @@
 #
 #   .\tools\foundry-server.ps1
 #   .\tools\foundry-server.ps1 -Instance scratch -Port 30001
+#   .\tools\foundry-server.ps1 -RigPath ..\..\..\.foundry    # from a worktree
 #
-# Override the binary location with -AppPath or $env:FOUNDRY_APP.
+# Override the binary location with -AppPath or $env:FOUNDRY_APP, and the rig location with
+# -RigPath or $env:FOUNDRY_RIG.
 #
 # Keep this file ASCII-only: Windows PowerShell 5.1 reads .ps1 as ANSI unless there is a
 # BOM, and a UTF-8 em dash decodes to a byte it treats as a smart quote, which opens a
@@ -17,6 +19,7 @@ param(
   [string]$Instance = "",
   [int]$Port = 30000,
   [string]$AppPath = $env:FOUNDRY_APP,
+  [string]$RigPath = $env:FOUNDRY_RIG,
   [switch]$HotReload,
   [switch]$ComposeOnly
 )
@@ -24,14 +27,26 @@ param(
 $ErrorActionPreference = "Stop"
 $repo = Split-Path -Parent $PSScriptRoot
 
+# The rig is normally this repo's own `.foundry`, but it is gitignored, so a git worktree gets
+# an empty one: no licence, no system, no world. -RigPath (or $env:FOUNDRY_RIG) points at an
+# existing rig elsewhere, which is what makes the scripts usable from a worktree. The module
+# is still composed from *this* checkout, so what gets tested is the code being edited here.
+$rigRoot = if ($RigPath) { $RigPath } else { Join-Path $repo ".foundry" }
+
+# A missing rig is only ever created at the default location. Everywhere else it means a typo,
+# and silently building an empty rig there is the exact failure this option exists to avoid.
+if ($RigPath -and -not (Test-Path $rigRoot)) {
+  throw "No rig at '$rigRoot'. -RigPath must name an existing .foundry directory."
+}
+
 # An instance is one data directory plus one port. Foundry holds a lock on Config/options.json
 # for as long as it runs and refuses to start against a locked directory, so servers meant to
 # run at the same time need separate -Instance names as well as separate -Port numbers.
-# The unnamed instance keeps the original .foundry\data path.
+# The unnamed instance sits at the root of the rig.
 if ($Instance -and ($Instance -notmatch '^[A-Za-z0-9._-]+$')) {
   throw "Instance name '$Instance' must be letters, digits, dot, dash or underscore."
 }
-$instanceRoot = if ($Instance) { Join-Path $repo ".foundry\$Instance" } else { Join-Path $repo ".foundry" }
+$instanceRoot = if ($Instance) { Join-Path $rigRoot $Instance } else { $rigRoot }
 $dataPath = Join-Path $instanceRoot "data"
 $moduleDir = Join-Path $dataPath "Data\modules\army-combat-5e"
 

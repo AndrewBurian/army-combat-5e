@@ -66,6 +66,30 @@ modules load fine that way. It needs Node 24.
 already running under your normal profile, a second invocation just opens a tab in the
 existing process and the debugging port is silently never opened.
 
+## Running from a git worktree
+
+`.foundry/` is gitignored, so a worktree starts with no rig at all: no licence, no system, no
+world. Point both scripts at the main checkout's rig instead of setting a second one up:
+
+```powershell
+$env:FOUNDRY_RIG = "C:\path\to\army-combat-5e\.foundry"
+.\tools\foundry-server.ps1
+.\tools\foundry-chrome.ps1
+```
+
+`-RigPath` does the same per-invocation. Set it for both scripts or neither: the signed-in
+browser profile lives beside the data, so moving one without the other logs the browser in
+against a different rig.
+
+The module is still composed from the checkout the script runs in, so what gets tested is the
+code being edited in the worktree, against the world in the main rig. The composed module
+directory's junctions are re-pointed to whichever checkout ran last, which is why two
+checkouts cannot usefully share one rig at the same time — and Foundry's lock on
+`Config/options.json` stops them trying.
+
+A rig named by `-RigPath` must already exist. Only the default location is created on demand,
+because a typo that silently builds an empty rig is the failure this option exists to prevent.
+
 ## Running more than one instance
 
 One unpacked Foundry can back any number of servers. The data directory is what cannot be

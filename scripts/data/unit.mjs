@@ -1,4 +1,5 @@
 import { ACTOR_TYPES, CONFIGURATIONS, UNIT_TYPES } from "../config.mjs";
+import { getUnitTokens, withUnitPlacement } from "../battle.mjs";
 import { findOrCreateStand } from "../creation.mjs";
 
 const { BooleanField, DocumentUUIDField, NumberField, SchemaField, StringField } = foundry.data.fields;
@@ -12,8 +13,9 @@ const { BooleanField, DocumentUUIDField, NumberField, SchemaField, StringField }
  *
  * Membership is *composition*, not identity: a unit records that it fields three stands
  * of hobgoblins, not which three tokens those are. Individual stand state lives on the
- * tokens, which is what lets many identical stands share one Stand actor. Tokens are
- * stamped with their unit at placement so the end-of-round pass can count survivors.
+ * tokens, which is what lets many identical stands share one Stand actor. Tokens carry
+ * their unit's id in a flag, set at placement or by assigning selected tokens; see
+ * battle.mjs.
  */
 export default class UnitData extends dnd5e.dataModels.actor.EncounterData {
 
@@ -142,10 +144,21 @@ export default class UnitData extends dnd5e.dataModels.actor.EncounterData {
    * @returns {Promise<Actor5e>}
    */
   async recordStartingStrength() {
+    const onField = getUnitTokens(this.parent).length;
     return this.parent.update({
-      "system.unit.startingStands": this.standCount,
+      "system.unit.startingStands": onField || this.standCount,
       "system.unit.broken": false
     });
+  }
+
+  /* -------------------------------------------- */
+
+  /**
+   * Place the unit's stands, tagging each token with this unit.
+   * @inheritDoc
+   */
+  async placeMembers() {
+    return withUnitPlacement(this.parent, () => super.placeMembers());
   }
 
   /* -------------------------------------------- */

@@ -48,6 +48,16 @@
   font-style: italic;
 }
 
+.army-combat-5e .army-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.army-combat-5e .army-button-row > button {
+  flex: 1 1 auto;
+}
+
 .army-combat-5e .hint.warning {
   color: var(--dnd5e-color-maroon, #9e2f2f);
 }

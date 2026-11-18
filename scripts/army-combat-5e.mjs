@@ -1,5 +1,7 @@
 import StandActorSheet from "./applications/stand-sheet.mjs";
 import UnitActorSheet from "./applications/unit-sheet.mjs";
+import * as battle from "./battle.mjs";
+import { registerBattleHooks } from "./battle.mjs";
 import { checkSystemCompatibility } from "./compatibility.mjs";
 import { ACTOR_TYPES, BATTLE_GRID_FEET, DISTANCE_SCALE, MODULE_ID, registerConditions } from "./config.mjs";
 import { applyBattleScale, createStandFromNPC, findOrCreateStand } from "./creation.mjs";
@@ -45,8 +47,10 @@ Hooks.once("init", () => {
   });
 
   registerHooks();
+  registerBattleHooks();
 
   game.modules.get(MODULE_ID).api = {
+    battle,
     applyBattleScale,
     createStandFromNPC,
     findOrCreateStand,

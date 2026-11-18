@@ -64,10 +64,41 @@
 
   "ARMY5E.Unit.Command": "Command",
   "ARMY5E.Unit.Commander": "Commander",
-  "ARMY5E.Unit.CommanderHint": "A solo joined to one of this unit's stands. One per unit.",
+  "ARMY5E.Unit.CommanderHint": "A solo joined to one of this unit's stands. One per unit. Drop an actor here to set it.",
   "ARMY5E.Unit.NoCommander": "None",
+  "ARMY5E.Unit.ClearCommander": "Remove Commander",
+
+  "ARMY5E.Unit.Battle": "Battle",
+  "ARMY5E.Unit.OnField": "Stands on Scene",
+  "ARMY5E.Unit.OnFieldHint": "Stand tokens tagged to this unit on the current scene. Placing members from this sheet tags them; for tokens placed another way, select them and assign.",
+  "ARMY5E.Unit.CasualtyCount": "{count} casualties",
+  "ARMY5E.Unit.AssignSelected": "Assign Selected",
+  "ARMY5E.Unit.AssignSelectedHint": "Tag the selected stand tokens as this unit's",
+  "ARMY5E.Unit.ApplyStatus": "All Stands",
+  "ARMY5E.Unit.StatusOn": "Apply to every stand",
+  "ARMY5E.Unit.StatusOff": "Remove from every stand",
+  "ARMY5E.Unit.AddToCombat": "Add to Combat and Roll",
+  "ARMY5E.Unit.EliminateCasualties": "Eliminate Casualties",
+  "ARMY5E.Unit.CheckMorale": "Check Morale",
+  "ARMY5E.Unit.Rally": "Rally",
+  "ARMY5E.Unit.InitiativeFlavor": "{name} rolls initiative ({type})",
 
   "ARMY5E.Unit.Notify.StrengthRecorded": "{name} starts the battle with {count} stands.",
+  "ARMY5E.Unit.Notify.Assigned": "Assigned {count} stands to {name}.",
+  "ARMY5E.Unit.Notify.Eliminated": "{name} lost {count} stands.",
+  "ARMY5E.Unit.Warning.NoTokens": "{name} has no stand tokens on this scene. Place its members from the sheet, or select its tokens and assign them.",
+
+  "ARMY5E.Morale.CheckFlavor": "{name} checks morale",
+  "ARMY5E.Morale.RallyFlavor": "{commander} rallies {name}",
+  "ARMY5E.Morale.Success": "Holds",
+  "ARMY5E.Morale.Failure": "Broken",
+  "ARMY5E.Morale.NoCommander": "{name} has no commander to rally it.",
+
+  "ARMY5E.Round.Speaker": "Battle",
+  "ARMY5E.Round.Header": "End of round {round}",
+  "ARMY5E.Round.UnitRow": "{name}: {casualties} casualties, {remaining} left of {started}.",
+  "ARMY5E.Round.MoraleDue": "Morale check due.",
+  "ARMY5E.Round.Resolve": "Eliminate Casualties and Check Morale",
   "ARMY5E.Unit.Warning.StandsOnly": "Only stands and NPCs can be added to a unit. Characters join a stand as solos instead.",
 
   "ARMY5E.Warning.IncompatibleSystem": "Army Combat 5e expects internals that dnd5e {version} does not provide ({methods}). Stands will not prepare correctly. Check for a module update."

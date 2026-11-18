@@ -21,7 +21,7 @@
     <div class="form-group">
       <label for="{{id}}-unit-config">{{localize "ARMY5E.Unit.Configuration"}}</label>
       <div class="form-fields">
-        <select id="{{id}}-unit-config" name="system.unit.configuration" {{#unless editable}}disabled{{/unless}}>
+        <select id="{{id}}-unit-config" name="system.unit.configuration" {{#unless unit.canControl}}disabled{{/unless}}>
           {{selectOptions unit.configurationChoices selected=unit.configuration}}
         </select>
       </div>
@@ -31,6 +31,47 @@
     <p class="hint">{{localize "ARMY5E.Unit.SkirmisherNoConfig"}}</p>
     {{/if}}
   </fieldset>
+
+  {{#if unit.isGM}}
+  <fieldset>
+    <legend>{{localize "ARMY5E.Unit.Battle"}}</legend>
+
+    <div class="form-group">
+      <label>{{localize "ARMY5E.Unit.OnField"}}</label>
+      <div class="form-fields">
+        <span>{{unit.onField}}{{#if unit.casualties}} ({{localize "ARMY5E.Unit.CasualtyCount" count=unit.casualties}}){{/if}}</span>
+        <button type="button" data-action="assignSelected" data-tooltip="ARMY5E.Unit.AssignSelectedHint">
+          <i class="fas fa-object-group"></i> {{localize "ARMY5E.Unit.AssignSelected"}}
+        </button>
+      </div>
+      <p class="hint">{{localize "ARMY5E.Unit.OnFieldHint"}}</p>
+    </div>
+
+    <div class="form-group">
+      <label>{{localize "ARMY5E.Unit.ApplyStatus"}}</label>
+      <div class="form-fields">
+        <select class="army-status-select">
+          {{selectOptions unit.statusChoices}}
+        </select>
+        <button type="button" data-action="setStatus" data-active="true" data-tooltip="ARMY5E.Unit.StatusOn">
+          <i class="fas fa-plus"></i>
+        </button>
+        <button type="button" data-action="setStatus" data-active="false" data-tooltip="ARMY5E.Unit.StatusOff">
+          <i class="fas fa-minus"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="army-button-row">
+      <button type="button" data-action="addToCombat">
+        <i class="fas fa-swords"></i> {{localize "ARMY5E.Unit.AddToCombat"}}
+      </button>
+      <button type="button" data-action="eliminateCasualties">
+        <i class="fas fa-skull"></i> {{localize "ARMY5E.Unit.EliminateCasualties"}}
+      </button>
+    </div>
+  </fieldset>
+  {{/if}}
 
   <fieldset>
     <legend>{{localize "ARMY5E.Unit.Strength"}}</legend>
@@ -52,23 +93,36 @@
       <p class="hint">{{localize "ARMY5E.Unit.StartingStandsHint"}}</p>
     </div>
 
-    {{#if editable}}
-    <div class="form-group">
+    {{#if unit.canControl}}
+    <div class="army-button-row">
       <button type="button" data-action="recordStrength">
-        <i class="fas fa-flag-checkered"></i>
-        {{localize "ARMY5E.Unit.RecordStrength"}}
+        <i class="fas fa-flag-checkered"></i> {{localize "ARMY5E.Unit.RecordStrength"}}
       </button>
+      <button type="button" data-action="checkMorale">
+        <i class="fas fa-dice-d20"></i> {{localize "ARMY5E.Unit.CheckMorale"}}
+      </button>
+      {{#if unit.broken}}
+      <button type="button" data-action="rally">
+        <i class="fas fa-flag"></i> {{localize "ARMY5E.Unit.Rally"}}
+      </button>
+      {{/if}}
     </div>
     {{/if}}
   </fieldset>
 
-  <fieldset>
+  <fieldset class="army-command">
     <legend>{{localize "ARMY5E.Unit.Command"}}</legend>
     <div class="form-group">
       <label>{{localize "ARMY5E.Unit.Commander"}}</label>
       <div class="form-fields">
         {{#if unit.commander}}
           <a class="content-link" data-uuid="{{unit.commander.uuid}}">{{unit.commander.name}}</a>
+          {{#if unit.canControl}}
+          <button type="button" class="unbutton" data-action="clearCommander"
+                  data-tooltip="ARMY5E.Unit.ClearCommander" aria-label="{{localize 'ARMY5E.Unit.ClearCommander'}}">
+            <i class="fas fa-times"></i>
+          </button>
+          {{/if}}
         {{else}}
           <span class="empty">{{localize "ARMY5E.Unit.NoCommander"}}</span>
         {{/if}}

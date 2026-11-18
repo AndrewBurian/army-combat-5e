@@ -11,7 +11,30 @@ commanders.
 
 ## Status
 
-Early — data models and sheets. Not yet playable.
+Playable with GM adjudication. Adjacency, isolation, damage carry-over and joined solos
+are tracked by hand.
+
+## Running a battle
+
+- **Scene:** set the grid to 20 ft per square.
+- **Stands:** right-click an NPC in the actor directory or a compendium and choose
+  *Create Stand*, or drop NPCs straight onto a unit sheet. Distances are converted to
+  battle scale on creation.
+- **Solos:** toggle *Battle Scale* on PCs and solo NPCs from the token HUD. It multiplies
+  speed, senses and token sight by 4. Weapon and spell ranges are not changed; read them
+  as feet / 5 = squares.
+- **Deploy:** place a unit's members from its sheet, which tags each token with the unit.
+  For tokens placed another way, select them and use *Assign Selected* on the unit tab.
+- **Initiative:** *Add to Combat and Roll* on each unit puts its stands in one combat group
+  and rolls once, using the highest (skirmisher) or lowest (regiment) Dex modifier. It also
+  records the unit's starting strength.
+- **Statuses:** unit type and configuration are applied to the stands automatically.
+  Isolated, Prepared, Incited, Broken and Casualty can be set per token from the HUD, or on
+  every stand of a unit from the unit tab.
+- **End of round:** advancing the round marks 0 hp stands as casualties and whispers the GM
+  a summary with a button that eliminates them and checks morale where losses require it.
+- **Command:** drop an actor on the unit tab's Command section to make it the commander.
+  *Rally* rerolls morale for a broken unit, adding the commander's Cha modifier.
 
 ## How it works
 

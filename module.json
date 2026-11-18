@@ -4,7 +4,7 @@
   "description": "Army-scale combat for D&D 5e, implementing the Unearthed Arcana <em>When Armies Clash</em> playtest. Adds Stand and Unit actor types.",
   "version": "0.1.0",
   "compatibility": {
-    "minimum": "13.347",
+    "minimum": "14",
     "verified": "14"
   },
   "relationships": {

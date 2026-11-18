@@ -14,9 +14,13 @@ const SENSE_KEYS = ["blindsight", "darkvision", "tremorsense", "truesight"];
 
 /**
  * Item range keys carrying a distance in feet.
+ *
+ * `reach` is deliberately absent. Melee is defined by adjacency at battle scale, and a reach
+ * of 10 ft or more grants a bonus attack rather than more distance, so reach keeps its
+ * character-scale value for that rule to read.
  * @type {string[]}
  */
-const RANGE_KEYS = ["value", "long", "reach"];
+const RANGE_KEYS = ["value", "long"];
 
 /* -------------------------------------------- */
 
@@ -131,4 +135,33 @@ export async function createStandFromNPC(npc, options = {}) {
   if ( options.folder ) source.folder = options.folder.id ?? options.folder;
 
   return Actor.implementation.create(source);
+}
+
+/* -------------------------------------------- */
+
+/**
+ * The world folder new stands are created in, creating it on first use.
+ * @returns {Promise<Folder>}
+ */
+async function getStandFolder() {
+  const name = game.i18n.localize("ARMY5E.Stand.Folder");
+  const existing = game.folders.find(f => (f.type === "Actor") && (f.name === name) && !f.folder);
+  return existing ?? Folder.implementation.create({ name, type: "Actor" });
+}
+
+/* -------------------------------------------- */
+
+/**
+ * Return the world stand made from an NPC, creating one if none exists yet.
+ *
+ * Stands use unlinked tokens, so one Stand actor backs every stand of that creature. Reusing
+ * it keeps the actor directory to one entry per creature kind however many units field it.
+ *
+ * @param {Actor5e} npc  The creature. May live in a compendium.
+ * @returns {Promise<Actor5e>}
+ */
+export async function findOrCreateStand(npc) {
+  const existing = game.actors.find(a => (a.type === ACTOR_TYPES.stand) && (a.system.stand.origin === npc.uuid));
+  if ( existing ) return existing;
+  return createStandFromNPC(npc, { folder: await getStandFolder() });
 }

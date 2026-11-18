@@ -66,6 +66,13 @@ export const STAND_SIZES = ["tiny", "sm", "med", "lg", "huge"];
  * `i18nInit` (dnd5e.mjs:421), so anything added afterwards is ignored.
  */
 export function registerConditions() {
+  const allSaves = ["str", "dex", "con", "int", "wis", "cha"].map(ability => ({
+    key: `system.abilities.${ability}.save.roll.mode`, type: "add", value: "1"
+  }));
+
+  // dnd5e copies every key of a condition type into CONFIG.statusEffects, and core turns
+  // `system.changes` into real ActiveEffect changes when the status is toggled. So these
+  // carry their mechanics with them whether set from the token HUD or the unit sheet.
   Object.assign(CONFIG.DND5E.conditionTypes, {
     isolated: {
       name: "ARMY5E.Condition.Isolated",
@@ -76,8 +83,63 @@ export function registerConditions() {
       name: "ARMY5E.Condition.Broken",
       img: "icons/svg/degen.svg",
       pseudo: true
+    },
+    casualty: {
+      name: "ARMY5E.Condition.Casualty",
+      img: "icons/svg/blood.svg",
+      pseudo: true
+    },
+    aid: {
+      name: "ARMY5E.Configuration.Aid",
+      img: "icons/svg/regen.svg",
+      pseudo: true,
+      exclusiveGroup: "army5e-configuration"
+    },
+    defend: {
+      name: "ARMY5E.Configuration.Defend",
+      img: "icons/svg/shield.svg",
+      pseudo: true,
+      exclusiveGroup: "army5e-configuration",
+      system: { changes: [{ key: "system.attributes.ac.bonus", type: "add", value: "2" }] }
+    },
+    skirmisher: {
+      name: "ARMY5E.UnitType.Skirmisher",
+      img: "icons/svg/wingfoot.svg",
+      pseudo: true,
+      system: { changes: [{ key: "system.abilities.dex.save.roll.mode", type: "add", value: "1" }] }
+    },
+    prepared: {
+      name: "ARMY5E.Order.Prepare",
+      img: "icons/svg/aura.svg",
+      pseudo: true,
+      system: { changes: allSaves }
+    },
+    incited: {
+      name: "ARMY5E.Order.Incite",
+      img: "icons/svg/fire.svg",
+      pseudo: true
+    },
+    battleScale: {
+      name: "ARMY5E.Condition.BattleScale",
+      img: "icons/svg/direction.svg",
+      pseudo: true,
+      system: {
+        changes: [
+          ...["walk", "fly", "swim", "climb", "burrow"].map(m => ({
+            key: `system.attributes.movement.${m}`, type: "multiply", value: String(DISTANCE_SCALE)
+          })),
+          ...["darkvision", "blindsight", "tremorsense", "truesight"].map(s => ({
+            key: `system.attributes.senses.ranges.${s}`, type: "multiply", value: String(DISTANCE_SCALE)
+          })),
+          { key: "token.sight.range", type: "multiply", value: String(DISTANCE_SCALE) }
+        ]
+      }
     }
   });
+
+  // Aid and Defend move at half speed. dnd5e halves every speed for any status in this set.
+  CONFIG.DND5E.conditionEffects.halfMovement?.add("aid");
+  CONFIG.DND5E.conditionEffects.halfMovement?.add("defend");
 
   // Isolation imposes disadvantage on the isolated combatant's own attacks. dnd5e has no
   // `attributes.attack.roll.mode` field — attack advantage is not modelled as data, and

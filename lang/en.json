@@ -14,6 +14,11 @@
 
   "ARMY5E.Condition.Isolated": "Isolated",
   "ARMY5E.Condition.Broken": "Broken",
+  "ARMY5E.Condition.Casualty": "Casualty",
+  "ARMY5E.Condition.BattleScale": "Battle Scale",
+
+  "ARMY5E.Order.Prepare": "Prepared",
+  "ARMY5E.Order.Incite": "Incited",
 
   "ARMY5E.Stand.Tab": "Stand",
   "ARMY5E.Stand.Folder": "Stands",

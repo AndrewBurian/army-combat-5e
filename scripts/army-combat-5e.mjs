@@ -119,5 +119,6 @@ function registerHooks() {
   Hooks.on("dnd5e.preRollAttack", config => {
     const actor = config.subject?.actor;
     if ( actor?.statuses?.has("isolated") ) config.disadvantage = true;
+    if ( actor?.statuses?.has("incited") ) config.advantage = true;
   });
 }

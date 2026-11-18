@@ -2,7 +2,7 @@ import StandActorSheet from "./applications/stand-sheet.mjs";
 import UnitActorSheet from "./applications/unit-sheet.mjs";
 import { checkSystemCompatibility } from "./compatibility.mjs";
 import { ACTOR_TYPES, BATTLE_GRID_FEET, DISTANCE_SCALE, MODULE_ID, registerConditions } from "./config.mjs";
-import { applyBattleScale, createStandFromNPC } from "./creation.mjs";
+import { applyBattleScale, createStandFromNPC, findOrCreateStand } from "./creation.mjs";
 import StandData from "./data/stand.mjs";
 import UnitData from "./data/unit.mjs";
 
@@ -49,6 +49,7 @@ Hooks.once("init", () => {
   game.modules.get(MODULE_ID).api = {
     applyBattleScale,
     createStandFromNPC,
+    findOrCreateStand,
     data: { StandData, UnitData },
     DISTANCE_SCALE,
     BATTLE_GRID_FEET
@@ -81,6 +82,33 @@ Hooks.once("ready", () => {
  * Register runtime hooks.
  */
 function registerHooks() {
+  /**
+   * "Create Stand" on NPCs, in both the actor directory and actor compendia. Both are
+   * DocumentDirectory subclasses, so both fire this hook with `collection` set to either
+   * the world actors or the pack.
+   */
+  Hooks.on("getActorContextOptions", (app, options) => {
+    const entry = li => app.collection.index?.get(li.dataset.entryId) ?? app.collection.get(li.dataset.entryId);
+    options.push({
+      label: "ARMY5E.Stand.Create",
+      icon: "fa-solid fa-people-group",
+      visible: li => game.user.can("ACTOR_CREATE") && (entry(li)?.type === "npc"),
+      onClick: async (event, li) => {
+        const { entryId } = li.dataset;
+        const npc = app.collection instanceof foundry.documents.collections.CompendiumCollection
+          ? await app.collection.getDocument(entryId)
+          : app.collection.get(entryId);
+        try {
+          const stand = await findOrCreateStand(npc);
+          ui.notifications.info(game.i18n.format("ARMY5E.Stand.Notify.Created", { name: stand.name }));
+          stand.sheet.render({ force: true });
+        } catch ( err ) {
+          ui.notifications.error(err.message);
+        }
+      }
+    });
+  });
+
   /**
    * An isolated stand or solo attacks at disadvantage.
    *

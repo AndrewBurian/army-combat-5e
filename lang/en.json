@@ -16,6 +16,9 @@
   "ARMY5E.Condition.Broken": "Broken",
 
   "ARMY5E.Stand.Tab": "Stand",
+  "ARMY5E.Stand.Folder": "Stands",
+  "ARMY5E.Stand.Create": "Create Stand",
+  "ARMY5E.Stand.Notify.Created": "Created {name}.",
   "ARMY5E.Stand.DefaultName": "{name} Stand",
   "ARMY5E.Stand.Composition": "Composition",
   "ARMY5E.Stand.FiguresStanding": "Figures Standing",
@@ -60,7 +63,7 @@
   "ARMY5E.Unit.NoCommander": "None",
 
   "ARMY5E.Unit.Notify.StrengthRecorded": "{name} starts the battle with {count} stands.",
-  "ARMY5E.Unit.Warning.StandsOnly": "Only stands can be added to a unit.",
+  "ARMY5E.Unit.Warning.StandsOnly": "Only stands and NPCs can be added to a unit. Characters join a stand as solos instead.",
 
   "ARMY5E.Warning.IncompatibleSystem": "Army Combat 5e expects internals that dnd5e {version} does not provide ({methods}). Stands will not prepare correctly. Check for a module update."
 }

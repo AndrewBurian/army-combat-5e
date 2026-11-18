@@ -1,4 +1,5 @@
 import { ACTOR_TYPES, CONFIGURATIONS, UNIT_TYPES } from "../config.mjs";
+import { findOrCreateStand } from "../creation.mjs";
 
 const { BooleanField, DocumentUUIDField, NumberField, SchemaField, StringField } = foundry.data.fields;
 
@@ -26,7 +27,7 @@ export default class UnitData extends dnd5e.dataModels.actor.EncounterData {
     return this.mergeSchema(super.defineSchema(), {
       unit: new SchemaField({
         // Skirmisher or regiment. Chosen before the battle; the rules forbid changing it
-        // once fighting has started, which is enforced at the UI layer rather than here.
+        // once fighting has started. Nothing enforces that yet.
         type: new StringField({
           required: true,
           initial: "regiment",
@@ -149,13 +150,23 @@ export default class UnitData extends dnd5e.dataModels.actor.EncounterData {
 
   /* -------------------------------------------- */
 
-  /** @inheritDoc */
+  /**
+   * Add stands to the unit. A plain NPC is converted to a stand first, reusing the world's
+   * existing stand for that creature if there is one, so dropping a monster from a
+   * compendium onto the unit sheet just works.
+   * @inheritDoc
+   */
   async addMember(...actors) {
+    const stands = [];
     for ( const actor of actors ) {
-      if ( actor.type !== ACTOR_TYPES.stand ) {
-        throw new Error(game.i18n.localize("ARMY5E.Unit.Warning.StandsOnly"));
-      }
+      if ( actor.type === ACTOR_TYPES.stand ) stands.push(actor);
+      else if ( actor.type === "npc" ) stands.push(await findOrCreateStand(actor));
+      else throw new Error(game.i18n.localize("ARMY5E.Unit.Warning.StandsOnly"));
     }
-    return super.addMember(...actors);
+    // One at a time: EncounterData#addMember only increments rows that already have a
+    // stored quantity, so the same actor twice in one call becomes two rows.
+    let result = this.parent;
+    for ( const stand of stands ) result = await super.addMember(stand);
+    return result;
   }
 }

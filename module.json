@@ -2,7 +2,7 @@
   "id": "army-combat-5e",
   "title": "Army Combat 5e",
   "description": "Army-scale combat for D&D 5e, implementing the Unearthed Arcana <em>When Armies Clash</em> playtest. Adds Stand and Unit actor types.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "compatibility": {
     "minimum": "14",
     "verified": "14"
@@ -55,6 +55,6 @@
   },
   "socket": false,
   "url": "https://github.com/AndrewBurian/army-combat-5e",
-  "manifest": "https://github.com/AndrewBurian/army-combat-5e/releases/latest/download/module.json",
+  "manifest": "https://raw.githubusercontent.com/AndrewBurian/army-combat-5e/main/module.json",
   "download": "https://github.com/AndrewBurian/army-combat-5e/archive/refs/heads/main.zip"
 }

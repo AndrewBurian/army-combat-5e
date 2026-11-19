@@ -14,6 +14,17 @@ commanders.
 Playable with GM adjudication. Adjacency, isolation, damage carry-over and joined solos
 are tracked by hand.
 
+## Installing
+
+In Foundry, *Setup > Add-on Modules > Install Module*, with this manifest URL:
+
+```
+https://raw.githubusercontent.com/AndrewBurian/army-combat-5e/main/module.json
+```
+
+Foundry offers an update only when `version` in `module.json` increases, so bump it with
+every push meant to reach a server.
+
 ## Running a battle
 
 - **Scene:** set the grid to 20 ft per square.
